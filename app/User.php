@@ -36,7 +36,7 @@ class User extends TelegramApp\User {
 		->getOne('user');
 
 		if($this->db->count == 0){ return FALSE; }
-		return $user[0];
+		return $user;
 	}
 
 	public function register($name = NULL, $class = NULL, $referal = NULL){
