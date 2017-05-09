@@ -29,7 +29,7 @@ class User extends TelegramApp\User {
 		->delete($table);
 	}
 
-	public function register($name, $class = NULL, $referal = NULL){
+	public function register($name = NULL, $class = NULL, $referal = NULL){
 		$data = [
 			'id' => $this->id,
 			'name' => $name,
