@@ -29,6 +29,16 @@ class User extends TelegramApp\User {
 		->delete($table);
 	}
 
+	public function exists($search){
+		$user = $this->db
+			->where('id', $search)
+			->orWhere('name', $search)
+		->getOne('user');
+
+		if($this->db->count == 0){ return FALSE; }
+		return $user[0];
+	}
+
 	public function register($name = NULL, $class = NULL, $referal = NULL){
 		$data = [
 			'id' => $this->id,

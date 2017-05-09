@@ -29,6 +29,10 @@ class Main extends TelegramApp\Module {
 				$error = "Será todo lo cuqui que quieras. Pero sin emojis.";
 			}elseif(empty($text)){
 				$error = "No alcanzo a ver tu nombre.";
+			}elseif(is_numeric($text)){
+				$error = "Ya tengo bastante con acordarme del agente número 007. Ponte un nombre como Thor manda.";
+			}elseif($this->user->exists($text)){
+				$error = "Lo siento, pero ya se te han adelantado con ese nombre. O eso, o es que eres muy poco original.";
 			}
 
 			if($error){
@@ -44,6 +48,18 @@ class Main extends TelegramApp\Module {
 
 			$this->telegram->send
 				->text("Guay! A partir de ahora, todo el mundo te conocerá como el famoso <b>$text</b>.", "HTML")
+			->send();
+
+			sleep(2);
+
+			$str = "Ahora debes elegir la clase que te interesa.";
+			$this->telegram->send
+				->keyboard()
+					->row_button($this->telegram->emoji("\ud83d\udd2e Mago"))
+					->row_button($this->telegram->emoji("\u2694\ufe0f Guerrero"))
+					->row_button($this->telegram->emoji("\ud83c\udfaf Arquero"))
+				->show(TRUE, TRUE)
+				->text($str)
 			->send();
 
 			$this->end();
