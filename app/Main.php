@@ -105,8 +105,8 @@ class Main extends TelegramApp\Module {
 				->text("De acuerdo, <b>" .$this->user->name ."</b>. ¡La aventura acaba de comenzar!", "HTML")
 			->send();
 
-			// Show menu?
-			$this->end();
+			sleep(1);
+			return $this->menu();
 		}
 	}
 
@@ -131,6 +131,28 @@ class Main extends TelegramApp\Module {
 			// TODO comprobar referal a través de código start.
 			return $this->first_time($ref);
 		}
+
+		return $this->menu();
+	}
+
+	public function menu(){
+		if($this->telegram->is_chat_group()){ $this->end(); }
+		$this->telegram->send
+			->keyboard()
+				->row()
+					->button("Atacar")
+					->button("Amigos")
+				->end_row()
+				->row()
+					->button("Inventario")
+					->button("Habilidades")
+				->end_row()
+				->row()
+					->button("Invitar amigos")
+				->end_row()
+			->show(TRUE, TRUE)
+			->text("¡Bienvenido, compatriota! ¿Qué te apetece hacer?")
+		->send();
 	}
 
 	private function first_time($ref = NULL){
