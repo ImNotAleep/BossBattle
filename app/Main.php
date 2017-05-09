@@ -19,6 +19,12 @@ class Main extends TelegramApp\Module {
 	}
 
 	private function register($step){
+		$classes = [
+			["\ud83d\udd2e", "Mago", "mage"],
+			["\u2694\ufe0f", "Guerrero", "warrior"],
+			["\ud83c\udfaf", "Arquero", "archer"]
+		];
+
 		if($step == "REGISTER_NAME"){
 			$text = trim($this->telegram->text(TRUE));
 			$error = NULL;
@@ -47,21 +53,59 @@ class Main extends TelegramApp\Module {
 			$this->user->step = "REGISTER_CLASS";
 
 			$this->telegram->send
-				->text("Guay! A partir de ahora, todo el mundo te conocerá como el famoso <b>$text</b>.", "HTML")
+				->text("Guay! A partir de ahora, todo el mundo te conocerá como el famoso <b>" .$this->user->name ."</b>.", "HTML")
 			->send();
 
 			sleep(2);
 
 			$str = "Ahora debes elegir la clase que te interesa.";
+			foreach($classes as $cl){
+				$this->telegram->send
+					->keyboard()
+					->row_button($this->telegram->emoji($cl[0] ." " .$cl[1]));
+			}
+
 			$this->telegram->send
 				->keyboard()
-					->row_button($this->telegram->emoji("\ud83d\udd2e Mago"))
-					->row_button($this->telegram->emoji("\u2694\ufe0f Guerrero"))
-					->row_button($this->telegram->emoji("\ud83c\udfaf Arquero"))
 				->show(TRUE, TRUE)
 				->text($str)
 			->send();
 
+			$this->end();
+		}elseif($step == "REGISTER_CLASS"){
+			$class = NULL;
+
+			foreach($classes as $cl){
+				if($this->telegram->text_has_emoji($cl[0])){
+					$class = $cl[2]; break;
+				}
+			}
+
+			if(empty($class)){
+				foreach($classes as $cl){
+					$this->telegram->send
+						->keyboard()
+						->row_button($this->telegram->emoji($cl[0] ." " .$cl[1]));
+				}
+
+				$this->telegram->send
+					->text("No reconozco esa clase. Por favor, dime la que te interesa.")
+					->keyboard()
+					->show(TRUE, TRUE)
+				->send();
+
+				$this->end();
+			}
+
+			$this->user->class = $class;
+			$this->user->step = NULL;
+
+			$this->telegram->send
+				->keyboard()->hide(TRUE)
+				->text("De acuerdo, <b>" .$this->user->name ."</b>. ¡La aventura acaba de comenzar!", "HTML")
+			->send();
+
+			// Show menu?
 			$this->end();
 		}
 	}
@@ -92,8 +136,7 @@ class Main extends TelegramApp\Module {
 	private function first_time($ref = NULL){
 		if($this->telegram->is_chat_group()){ $this->end(); }
 
-		$str = "Si has llegado hasta aquí, significa que vienes buscando guerra... Y guerra tendrás.\n"
-				."¿Estás preparado?";
+		$str = "Si has llegado hasta aquí, significa que vienes buscando guerra... Y guerra tendrás. ¿Estás preparado?";
 
 		$this->telegram->send
 			->caption($str)
