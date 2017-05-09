@@ -123,14 +123,14 @@ class Main extends TelegramApp\Module {
 		}
 
 		// Comprobar el usuario.
-		if(!isset($this->user->name)){
+		$name = $this->user->name;
+		if(empty($name)){
 			$ref = NULL;
-			if(is_numeric($data)){
-				$ref = $data;
-			}
-			// TODO comprobar referal a través de código start.
+			if(is_numeric($data)){ $ref = $data; }
 			return $this->first_time($ref);
 		}
+
+		// TODO Recompensa
 
 		return $this->menu();
 	}
